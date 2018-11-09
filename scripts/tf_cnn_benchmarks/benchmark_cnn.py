@@ -746,8 +746,9 @@ def benchmark_one_step(sess,
       (step == 0 or (step + 1) % params.display_every == 0)):
     speed_mean, speed_uncertainty, speed_jitter = get_perf_timing(
         batch_size, step_train_times)
-    log_str = '%i\t%s\t%.*f' % (
+    log_str = '%i\t%s\t%s\t%.*f' % (
         step + 1,
+	train_time,
         get_perf_timing_str(speed_mean, speed_uncertainty, speed_jitter),
         LOSS_AND_ACCURACY_DIGITS_TO_SHOW, lossval)
     if 'top_1_accuracy' in results:
@@ -1926,7 +1927,7 @@ class BenchmarkCNN(object):
             sess.run([graph_info.execution_barrier])
 
           # TODO(laigd): rename 'Img' to maybe 'Input'.
-          header_str = ('Step\tImg/sec\t' +
+          header_str = ('Step\tTraining_time\tImg/sec\t' +
                         self.params.loss_type_to_report.replace('/', ' '))
           if self.params.print_training_accuracy or self.params.forward_only:
             # TODO(laigd): use the actual accuracy op names of the model.
