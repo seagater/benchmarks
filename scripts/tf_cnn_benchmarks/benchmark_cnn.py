@@ -733,6 +733,8 @@ def benchmark_one_step(sess,
   else:
     (results, summary_str) = sess.run(
         [fetches, summary_op], options=run_options, run_metadata=run_metadata)
+  end_time = time.time()
+  train_time = time.time() - start_time
 
   if not params.forward_only:
     lossval = results['average_loss']
@@ -740,15 +742,19 @@ def benchmark_one_step(sess,
     lossval = 0.
   if image_producer is not None:
     image_producer.notify_image_consumption()
-  train_time = time.time() - start_time
+
   step_train_times.append(train_time)
   if (show_images_per_sec and step >= 0 and
       (step == 0 or (step + 1) % params.display_every == 0)):
     speed_mean, speed_uncertainty, speed_jitter = get_perf_timing(
         batch_size, step_train_times)
+    if step == 0:
+        show_time = int(start_time)
+    else:
+        show_time = int(end_time)
     log_str = '%i\t%s\t%s\t%.*f' % (
         step + 1,
-	train_time,
+        show_time,
         get_perf_timing_str(speed_mean, speed_uncertainty, speed_jitter),
         LOSS_AND_ACCURACY_DIGITS_TO_SHOW, lossval)
     if 'top_1_accuracy' in results:
